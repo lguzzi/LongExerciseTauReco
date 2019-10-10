@@ -16,12 +16,12 @@ parser.add_argument(
 args = parser.parse_args()
 sample = args.file
 
-root_file = ROOT.TFile.Open('tau_gentau_tuple_{}.root'.format(sample), 'READ')
+root_file = ROOT.TFile.Open('tau_gentau_tuple_{}{}.root'.format(sample), 'READ')
 tree = root_file.Get('tree')
 
 dataframe = pandas.DataFrame( root_numpy.tree2array(    tree      = tree,
                                                         branches  = ['tau_gen_vis_signal_dR', 'tau_gen_vis_pt'],
-                                                        selection = 'tau_gen_decaymode <= 10'))
+                                                        selection = 'tau_gen_decaymode > 0 && tau_gen_decaymode <= 10'))
 
 QTL = [0.8, 0.85, 0.9, 0.95, 0.99]
 pt_bins = [18., 20., 22., 24., 28., 32., 36., 40., 45., 50., 60., 80., 100., 200]

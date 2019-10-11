@@ -19,26 +19,29 @@ parser = argparse.ArgumentParser(
 		    description="Convert MiniAOD to flat ntuples!")
 parser.add_argument(
 	"--file",
-	choices=['ZTT','QCD'],
+	choices=['TGUN','FAKES'],
 	required=True,
 	help='Specify the sample you want to flatten')
 args = parser.parse_args()
 sample = args.file
 
+label = '_standard'
+
 ##########################################################################################
 # initialise output files to save the flat ntuples
-outfile_gen = ROOT.TFile('tau_gentau_tuple_{}.root'.format(sample), 'recreate')
+outfile_gen = ROOT.TFile('tau_gentau_tuple_{}{}.root'.format(sample, label), 'recreate')
 ntuple_gen = ROOT.TNtuple('tree', 'tree', ':'.join(branches))
 tofill_gen = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all branches to unphysical -99       
 
-outfile_jet = ROOT.TFile('tau_jet_tuple_{}.root'.format(sample), 'recreate')
+outfile_jet = ROOT.TFile('tau_jet_tuple_{}{}.root'.format(sample, label), 'recreate')
 ntuple_jet = ROOT.TNtuple('tree', 'tree', ':'.join(branches))
 tofill_jet = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all branches to unphysical -99       
 
 ##########################################################################################
 # Get ahold of the events
-events = Events('{}_miniAOD_rerunTauRECO.root'.format(sample)) # make sure this corresponds to your file name!
-maxevents = -1 # max events to process
+#events = Events('samples/{}_miniAOD_rerunTauRECO{}.root'.format(sample, label)) # make sure this corresponds to your file name!
+events = Events('samples/taugun_MINIAODSIM/25A52E71-2B61-6747-B2BA-1F51E581E6AC.root'.format(sample, label)) # make sure this corresponds to your file name!
+maxevents = 200 # max events to process
 totevents = events.size() # total number of events in the files
 
 ##########################################################################################
@@ -48,17 +51,17 @@ totevents = events.size() # total number of events in the files
 # edmDumpEventContent outputFULL.root
 
 # PAT taus
-label_taus = ('selectedPatTaus', '', 'TAURECO')
+label_taus = ('slimmedTaus')
 handle_taus = Handle('std::vector<pat::Tau>')
 # PAT jets
-label_jets = ('slimmedJets', '', 'PAT')
+label_jets = ('slimmedJets')
 handle_jets = Handle('std::vector<pat::Jet>')
 # gen particles
-label_gen  = ('prunedGenParticles', '', 'PAT')
+label_gen  = ('prunedGenParticles')
 handle_gen = Handle('std::vector<reco::GenParticle>')
 # vertices
 handle_vtx = Handle('std::vector<reco::Vertex>')
-label_vtx  = ('offlineSlimmedPrimaryVertices','','PAT')
+label_vtx  = ('offlineSlimmedPrimaryVertices')
 
 ##########################################################################################
 # example histogram
@@ -86,7 +89,6 @@ for i, ev in enumerate(events):
     
     # loosely filter the reco taus 
     taus = [tau for tau in taus if tau.pt()>18.]
-
     ######################################################################################
     # access the jets
     ev.getByLabel(label_jets, handle_jets)

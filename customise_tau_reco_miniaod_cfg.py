@@ -1,42 +1,33 @@
 import FWCore.ParameterSet.Config as cms
-
-# trick to make python know where to look for the imports
-import sys
-sys.path.append('..')
-
-# for example: here
 from rerunTauRecoOnMiniAOD import process
 
-runSignal = False # Set to False to read in QCD file instead of ZTT
+label = '_standard'
 
-maxEvents = 200
+runSignal = True
+maxEvents = 10000
 
 readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
-process.source = cms.Source(
-    "PoolSource", fileNames=readFiles, secondaryFileNames=secFiles)
 
-print('\t Max events:', process.maxEvents.input.value())
-
+tau_gun_files = glob.glob('/eos/cms/store/relval/CMSSW_10_6_4_patch1/RelValTenTau_15_500/MINIAODSIM/PU25ns_106X_upgrade2018_realistic_v9_HS-v1/10000/*.root')
 if runSignal:
-    readFiles.extend([
-        'file:ZTT_MiniAOD_106X.root' 
-    ])
+    readFiles.extend(tau_gun_files)
 else:
-    readFiles.extend([ 
-        'file:QCD_MiniAOD_106X.root'
-    ])
-
-# limit the number of events to be processed
+    readFiles.extend([''])
+process.source = cms.Source("PoolSource", fileNames=readFiles, secondaryFileNames=secFiles)
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32( maxEvents )
 )
 
+print('\t Max events:', process.maxEvents.input.value())
 ## E.G.: change the isolation cone
 #process.combinatoricRecoTaus.builders[0].isolationConeSize = cms.double(0.8) # originally 0.5
 
 ## E.G.: Remove all decay modes with piZeros
 #process.combinatoricRecoTaus.builders[0].decayModes = [dm for dm in process.combinatoricRecoTaus.builders[0].decayModes if dm.nPiZeros==0]
+
+# # change the signal cone
+# process.combinatoricRecoTaus.builders[0].signalConeSize = cms.string('max(min(0.2, 4.0/pt()), 0.05)') # originally 'max(min(0.1, 3.0/pt()), 0.05)', shrinks with pt
 
 ## Some more settings (default values given):
 """
@@ -257,6 +248,4 @@ process.hpsPFTauDiscriminationByDecayModeFindingNewDMs.decayModes(
 )
 """
 
-
-# change the output file name, don't overwrite the original file!
-process.output.fileName = cms.untracked.string('{}_miniAOD_rerunTauRECO.root'.format("ZTT" if runSignal else "QCD"))
+process.output.fileName = cms.untracked.string('{}_miniAOD_rerunTauRECO{}.root'.format("TGUN" if runSignal else "FAKES", label))

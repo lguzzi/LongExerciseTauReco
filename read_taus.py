@@ -66,7 +66,9 @@ totevents = events.size() # total number of events in the files
 # edmDumpEventContent outputFULL.root
 
 # PAT taus
-label_taus = ('slimmedTaus')
+#label_taus = ('slimmedTaus')
+label_taus  = (reco_tau_collection)
+print 'INFO: reading', reco_tau_collection
 handle_taus = Handle('std::vector<pat::Tau>')
 # PAT jets
 label_jets = ('slimmedJets')

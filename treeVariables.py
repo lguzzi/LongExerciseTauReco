@@ -32,5 +32,9 @@ branches = [
     'jet_pt',
     'jet_eta',
     'jet_phi',
-    'jet_charge'
+    'jet_charge',
+    'gamma_gen_min_pt',
+    'gamma_reco_min_pt',
 ]
+
+

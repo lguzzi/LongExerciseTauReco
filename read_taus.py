@@ -141,6 +141,7 @@ for i, ev in enumerate(events):
     gen_taus_copy = gen_taus # we'll cyclically remove any gen taus that gets matched
     
     for tt in taus:
+        tt.gamma_reco_min_pt = min([dd.pt() for dd in finalDaughters(tt) if abs(dd.pdgId()) == 22] + [-99])
         matches = [gg for gg in gen_taus_copy if deltaR(tt.p4(), gg.visp4)<0.3]
         if not len(matches):
             continue
@@ -156,6 +157,7 @@ for i, ev in enumerate(events):
         gg.signal_vis_dR_pt1 = max( [deltaR(gg.visp4, dd.p4()) for dd in finalDaughters(gg) if dd.pt() > 1 and  abs(dd.pdgId()) not in [12, 14, 16]] + [-99])
         gg.signal_all_dR_pt1 = max( [deltaR(gg.p4(), dd.p4())  for dd in finalDaughters(gg) if dd.pt() > 1 and  abs(dd.pdgId()) not in [12, 14, 16]] + [-99])
 
+        gg.gamma_gen_min_pt  = min([dd.pt() for dd in finalDaughters(gg) if abs(dd.pdgId()) == 22] + [-99])
 
     ######################################################################################
     # match reco taus to reco jets
@@ -186,6 +188,7 @@ for i, ev in enumerate(events):
         tofill_gen['lumi'              ] = ev.eventAuxiliary().luminosityBlock()
         tofill_gen['event'             ] = ev.eventAuxiliary().event()
         tofill_gen['nvtx'              ] = vertices.size()
+        tofill_gen['gamma_gen_min_pt'  ] = gg.gamma_gen_min_pt
         if hasattr(gg, 'reco_tau') and gg.reco_tau:
             tofill_gen['tau_reco_mass'     ] = gg.reco_tau.mass()
             tofill_gen['tau_reco_pt'       ] = gg.reco_tau.pt()
@@ -194,6 +197,7 @@ for i, ev in enumerate(events):
             tofill_gen['tau_reco_charge'   ] = gg.reco_tau.charge()
             tofill_gen['tau_reco_decaymode'] = gg.reco_tau.decayMode()
             tofill_gen['tau_reco_iso'      ] = gg.reco_tau.tauID('byLooseIsolationMVArun2v1DBoldDMwLT')
+            tofill_gen['gamma_reco_min_pt' ] = gg.reco_tau.gamma_reco_min_pt
         tofill_gen['tau_gen_pt'        ] = gg.pt()
         tofill_gen['tau_gen_eta'       ] = gg.eta()
         tofill_gen['tau_gen_phi'       ] = gg.phi()

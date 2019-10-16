@@ -32,7 +32,10 @@ print('\t Max events:', process.maxEvents.input.value())
 #process.combinatoricRecoTaus.builders[0].decayModes = [dm for dm in process.combinatoricRecoTaus.builders[0].decayModes if dm.nPiZeros==0]
 
 # # change the signal cone
-# process.combinatoricRecoTaus.builders[0].signalConeSize = cms.string('max(min(0.2, 4.0/pt()), 0.05)') # originally 'max(min(0.1, 3.0/pt()), 0.05)', shrinks with pt
+# originally 'max(min(0.1, 3.0/pt()), 0.05)', shrinks with pt
+#process.combinatoricRecoTaus.builders[0].signalConeSize = cms.string('max(min(0.15, 3.59/(pt()^0.93)), 0.02)') ## 0.90 efficiency
+process.combinatoricRecoTaus.builders[0].signalConeSize = cms.string('max(min(0.21, 4.85/(pt()^0.91)), 0.03)') ## 0.95 efficiency
+#process.combinatoricRecoTaus.builders[0].signalConeSize = cms.string('0.00001') ## xcheck
 
 ## Some more settings (default values given):
 """

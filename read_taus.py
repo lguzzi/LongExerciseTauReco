@@ -151,8 +151,12 @@ for i, ev in enumerate(events):
         gen_taus_copy = [gg for gg in gen_taus_copy if gg != bestmatch]
 
     for gg in gen_taus:
-        gg.signal_vis_dR = max( [deltaR(gg.visp4, dd.p4()) for dd in finalDaughters(gg) if abs(dd.pdgId()) not in [12, 14, 16]])
-        gg.signal_all_dR = max( [deltaR(gg.p4(), dd.p4())  for dd in finalDaughters(gg) if abs(dd.pdgId()) not in [12, 14, 16]])
+        gg.signal_vis_dR     = max( [deltaR(gg.visp4, dd.p4()) for dd in finalDaughters(gg) if abs(dd.pdgId()) not in [12, 14, 16]])
+        gg.signal_all_dR     = max( [deltaR(gg.p4(), dd.p4())  for dd in finalDaughters(gg) if abs(dd.pdgId()) not in [12, 14, 16]])
+        gg.signal_vis_dR_pt1 = max( [deltaR(gg.visp4, dd.p4()) for dd in finalDaughters(gg) if dd.pt() > 1 and  abs(dd.pdgId()) not in [12, 14, 16]] + [-99])
+        gg.signal_all_dR_pt1 = max( [deltaR(gg.p4(), dd.p4())  for dd in finalDaughters(gg) if dd.pt() > 1 and  abs(dd.pdgId()) not in [12, 14, 16]] + [-99])
+
+
     ######################################################################################
     # match reco taus to reco jets
     for jj in jets : jj.tau = None # first initialise the matching to None
@@ -201,6 +205,8 @@ for i, ev in enumerate(events):
         tofill_gen['tau_gen_vis_phi'   ] = gg.visphi()
         tofill_gen['tau_gen_vis_signal_dR'] = gg.signal_vis_dR
         tofill_gen['tau_gen_all_signal_dR'] = gg.signal_all_dR
+        tofill_gen['tau_gen_vis_signal_dR_pt1'] = gg.signal_vis_dR
+        tofill_gen['tau_gen_all_signal_dR_pt1'] = gg.signal_all_dR
         ntuple_gen.Fill(array('f',tofill_gen.values()))
     # fill the ntuple: each jet makes an entry
     for jj in jets:

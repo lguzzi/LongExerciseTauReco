@@ -23,6 +23,8 @@ branches = [
     'tau_gen_vis_mass',
     'tau_gen_vis_pt',
     'tau_gen_vis_signal_dR',
+    'tau_gen_vis_signal_dR_pt1',
+    'tau_gen_all_signal_dR_pt1',
     'tau_gen_all_signal_dR',
     'tau_gen_vis_eta',
     'tau_gen_vis_phi',

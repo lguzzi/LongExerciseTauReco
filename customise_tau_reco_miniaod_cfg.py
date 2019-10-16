@@ -1,4 +1,7 @@
 import FWCore.ParameterSet.Config as cms
+# trick to make python know where to look for the imports
+import sys
+sys.path.append('..')
 from rerunTauRecoOnMiniAOD import process
 
 label = '_standard'

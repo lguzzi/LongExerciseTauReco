@@ -14,6 +14,7 @@ from treeVariables import branches # here the ntuple branches are defined
 from utils import isGenHadTau, finalDaughters, printer # utility functions
 import sys
 import argparse
+import glob
 
 parser = argparse.ArgumentParser(
 		    description="Convert MiniAOD to flat ntuples!")
@@ -22,10 +23,21 @@ parser.add_argument(
 	choices=['TGUN','FAKES'],
 	required=True,
 	help='Specify the sample you want to flatten')
+parser.add_argument(
+	"--label")
+parser.add_argument(
+	"--taus")
+parser.add_argument(
+    '--taugun',
+    action = 'store_true',
+    help = 'Use taugun miniAODSIM instead of custom sample (signal only)'
+)
 args = parser.parse_args()
 sample = args.file
+use_taugun = args.taugun
 
-label = '_standard'
+label = getattr(args, 'label', '_delme')
+reco_tau_collection = getattr(args, 'taus', 'slimmedTaus')
 
 ##########################################################################################
 # initialise output files to save the flat ntuples
@@ -39,9 +51,12 @@ tofill_jet = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all b
 
 ##########################################################################################
 # Get ahold of the events
-#events = Events('samples/{}_miniAOD_rerunTauRECO{}.root'.format(sample, label)) # make sure this corresponds to your file name!
-events = Events('samples/taugun_MINIAODSIM/25A52E71-2B61-6747-B2BA-1F51E581E6AC.root'.format(sample, label)) # make sure this corresponds to your file name!
-maxevents = 200 # max events to process
+tau_gun_files = glob.glob('/eos/cms/store/relval/CMSSW_10_6_4_patch1/RelValTenTau_15_500/MINIAODSIM/PU25ns_106X_upgrade2018_realistic_v9_HS-v1/10000/*.root')
+input_files = '{}_miniAOD_rerunTauRECO{}.root'.format(sample, label) if not use_taugun else tau_gun_files[0]
+print 'INFO: reading file', input_files
+events = Events(input_files)
+
+maxevents = -1 # max events to process
 totevents = events.size() # total number of events in the files
 
 ##########################################################################################

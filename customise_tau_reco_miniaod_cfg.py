@@ -3,6 +3,7 @@ import FWCore.ParameterSet.Config as cms
 import sys
 sys.path.append('..')
 from rerunTauRecoOnMiniAOD import process
+import glob
 
 label = '_standard'
 
@@ -13,6 +14,7 @@ readFiles = cms.untracked.vstring()
 secFiles = cms.untracked.vstring()
 
 tau_gun_files = glob.glob('/eos/cms/store/relval/CMSSW_10_6_4_patch1/RelValTenTau_15_500/MINIAODSIM/PU25ns_106X_upgrade2018_realistic_v9_HS-v1/10000/*.root')
+tau_gun_files = ['file:'+tt for tt in tau_gun_files]
 if runSignal:
     readFiles.extend(tau_gun_files)
 else:

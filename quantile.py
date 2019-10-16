@@ -55,7 +55,7 @@ for ii, qq in enumerate(QTL):
         dR_up = inverse(20 , A, B)
         dR_lo = inverse(100, A, B)
         y = [max(min(loglog_pol1(xx, A, B), dR_up), dR_lo) for xx in x]
-        label = 'max(min({B} / x$^{{{A}}}$, {U}), {L})'.format(	B = str(np.log(B))[:4]  , 
+        label = 'max(min({B} / x$^{{{A}}}$, {U}), {L})'.format(	B = str(np.exp(B))[:4]  ,
                                                                 A = str(A)[:4]          , 
                                                                 U = str(dR_up)[:4]      , 
                                                                 L = str(dR_lo)[:4]      )

@@ -35,6 +35,9 @@ branches = [
     'jet_charge',
     'gamma_gen_min_pt',
     'gamma_reco_min_pt',
-]
+] +\
+['tau_reco_byDeepTau2017v2VSjetraw'] +\
+['tau_reco_by%sDeepTau2017v2VSjet' %ii for ii in  ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']]
+
 
 

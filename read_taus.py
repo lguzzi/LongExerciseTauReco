@@ -18,26 +18,15 @@ import glob
 
 parser = argparse.ArgumentParser(
 		    description="Convert MiniAOD to flat ntuples!")
-parser.add_argument(
-	"--file",
-	choices=['TGUN','FAKES'],
-	required=True,
-	help='Specify the sample you want to flatten')
-parser.add_argument(
-	"--label")
-parser.add_argument(
-	"--taus")
-parser.add_argument(
-    '--taugun',
-    action = 'store_true',
-    help = 'Use taugun miniAODSIM instead of custom sample (signal only)'
-)
+parser.add_argument("--type"        , default = 'TGUN')
+parser.add_argument("--label"       , default = '_delme')
+parser.add_argument("--collection"  , default = 'slimmedTausNewID')
+parser.add_argument("--file")
 args = parser.parse_args()
-sample = args.file
-use_taugun = args.taugun
-
-label = getattr(args, 'label', '_delme')
-reco_tau_collection = getattr(args, 'taus', 'slimmedTaus')
+sample = args.type
+label  = args.label
+file   = args.file
+collection = args.collection
 
 ##########################################################################################
 # initialise output files to save the flat ntuples
@@ -51,24 +40,16 @@ tofill_jet = OrderedDict(zip(branches, [-99.]*len(branches))) # initialise all b
 
 ##########################################################################################
 # Get ahold of the events
-tau_gun_files = glob.glob('/eos/cms/store/relval/CMSSW_10_6_4_patch1/RelValTenTau_15_500/MINIAODSIM/PU25ns_106X_upgrade2018_realistic_v9_HS-v1/10000/*.root')
-input_files = '{}_miniAOD_rerunTauRECO{}.root'.format(sample, label) if not use_taugun else tau_gun_files[0]
-print 'INFO: reading file', input_files
-events = Events(input_files)
+print 'INFO: reading file', file 
+events = Events(file)
 
 maxevents = -1 # max events to process
 totevents = events.size() # total number of events in the files
 
-##########################################################################################
-# instantiate the handles to the relevant collections.
-# Do this *outside* the event loop
-# Reminder: you can see the names of the collections stored in your input file by doing:
-# edmDumpEventContent outputFULL.root
-
 # PAT taus
 #label_taus = ('slimmedTaus')
-label_taus  = (reco_tau_collection)
-print 'INFO: reading', reco_tau_collection
+print 'INFO: reading', collection
+label_taus  = (collection)
 handle_taus = Handle('std::vector<pat::Tau>')
 # PAT jets
 label_jets = ('slimmedJets')
@@ -79,6 +60,10 @@ handle_gen = Handle('std::vector<reco::GenParticle>')
 # vertices
 handle_vtx = Handle('std::vector<reco::Vertex>')
 label_vtx  = ('offlineSlimmedPrimaryVertices')
+
+deeptau_ids = ['byDeepTau2017v2VSjetraw'] +   ['by%sDeepTau2017v2VSjet' 
+                                                    %ii for ii in  ['VVVLoose', 'VVLoose', 'VLoose', 'Loose', 'Medium', 'Tight', 'VTight', 'VVTight']
+                                                ]
 
 ##########################################################################################
 # example histogram
@@ -103,9 +88,11 @@ for i, ev in enumerate(events):
     # access the taus
     ev.getByLabel(label_taus, handle_taus)
     taus = handle_taus.product()
-    
     # loosely filter the reco taus 
     taus = [tau for tau in taus if tau.pt()>18.]
+    for tt in taus:
+        for ii in deeptau_ids:
+            setattr(tt, ii, tt.tauID(ii))
     ######################################################################################
     # access the jets
     ev.getByLabel(label_jets, handle_jets)
@@ -198,6 +185,8 @@ for i, ev in enumerate(events):
             tofill_gen['tau_reco_decaymode'] = gg.reco_tau.decayMode()
             tofill_gen['tau_reco_iso'      ] = gg.reco_tau.tauID('byLooseIsolationMVArun2v1DBoldDMwLT')
             tofill_gen['gamma_reco_min_pt' ] = gg.reco_tau.gamma_reco_min_pt
+            for ii in deeptau_ids:
+                tofill_gen['tau_reco_'+ii] = getattr(gg.reco_tau, ii, -99)
         tofill_gen['tau_gen_pt'        ] = gg.pt()
         tofill_gen['tau_gen_eta'       ] = gg.eta()
         tofill_gen['tau_gen_phi'       ] = gg.phi()

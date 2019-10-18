@@ -6,23 +6,19 @@ import argparse
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-label = '_standard'
-
 def loglog_pol1(x, A, B):
     return np.exp(B) * np.power(x, -A)
 
 def inverse(y, A, B):
     return np.power(1. * np.exp(B) / y, 1./A)
 
-parser = argparse.ArgumentParser(
-            description="Convert MiniAOD to flat ntuples!")
-parser.add_argument(
-    "--file",
-    choices=['TGUN','FAKES'],
-    required=True,
-    help='Specify the sample you want to flatten')
+parser = argparse.ArgumentParser()
+parser.add_argument('--file')
+parser.add_argument('--label', default = '_delme')
+
 args = parser.parse_args()
 sample = args.file
+label = args.label
 
 root_file = ROOT.TFile.Open('samples/tau_gentau_tuple_{}{}.root'.format(sample, label), 'READ')
 tree = root_file.Get('tree')

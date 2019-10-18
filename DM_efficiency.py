@@ -6,15 +6,13 @@ ROOT.gStyle.SetOptStat(0)
 
 label = '_standard'
 
-parser = argparse.ArgumentParser(
-            description="Convert MiniAOD to flat ntuples!")
-parser.add_argument(
-    "--file",
-    choices=['TGUN','FAKES'],
-    required=True,
-    help='Specify the sample you want to flatten')
+parser = argparse.ArgumentParser()
+parser.add_argument('--file')
+parser.add_argument('--label', default = '_delme')
+
 args = parser.parse_args()
 sample = args.file
+label = args.label
 
 root_file = ROOT.TFile.Open('samples/tau_gentau_tuple_{}{}.root'.format(sample, label), 'READ')
 tree = root_file.Get('tree')

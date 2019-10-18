@@ -25,7 +25,7 @@ parser.add_argument("--file")
 args = parser.parse_args()
 sample = args.type
 label  = args.label
-file   = args.file
+file   = args.file if args.file is not None else '{}_miniAOD_rerunTauRECO{}.root'.format(sample, label) 
 collection = args.collection
 
 ##########################################################################################
@@ -214,12 +214,15 @@ for i, ev in enumerate(events):
         tofill_jet['jet_phi'    ] = jj.phi()
         tofill_jet['jet_charge' ] = jj.charge()
         if hasattr(jj, 'tau') and jj.tau:
+            for ii in deeptau_ids:
+                tofill_jet['tau_reco_'+ii] = getattr(jj.tau, ii, -99)
             tofill_jet['tau_reco_mass'     ] = jj.tau.mass()
             tofill_jet['tau_reco_pt'       ] = jj.tau.pt()
             tofill_jet['tau_reco_eta'      ] = jj.tau.eta()
             tofill_jet['tau_reco_phi'      ] = jj.tau.phi()
             tofill_jet['tau_reco_charge'   ] = jj.tau.charge()
             tofill_jet['tau_reco_decaymode'] = jj.tau.decayMode()
+            tofill_gen['gamma_reco_min_pt' ] = jj.tau.gamma_reco_min_pt
             tofill_gen['tau_reco_iso'      ] = jj.tau.tauID('byLooseIsolationMVArun2v1DBoldDMwLT')
             if hasattr(jj.tau, 'gen_tau') and jj.tau.gen_tau:
                 tofill_gen['tau_gen_pt'        ] = jj.tau.gen_tau.pt()

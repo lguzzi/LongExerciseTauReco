@@ -5,15 +5,13 @@ import argparse
 
 ROOT.gStyle.SetOptStat(0)
 
-parser = argparse.ArgumentParser(description="Plot quantities from ntuples")
-parser.add_argument("--file",
-		choices=['TGUN','FAKES'],
-		required=True,
-		help='Specify the sample you want to use for plotting')
+parser = argparse.ArgumentParser()
+parser.add_argument('--file')
+parser.add_argument('--label', default = '_delme')
+
 args = parser.parse_args()
 sample = args.file
-
-label = '_standard'
+label = args.label
 
 infile = ROOT.TFile.Open('tau_{}_tuple_{}{}.root'.format("jet" if sample=="QCD" else "gentau", sample, label), 'read')
 infile.cd()
